@@ -37,6 +37,12 @@ org $02A451
 org $0DDB7F
 HUD_RefreshIconLong:
 
+;-------------------
+; Hammerable Ganon
+;-------------------
+org $06F2EA
+	LDA $0E20, X : CMP.b #$D8
+
 ;---------------------------------
 ; Visible guard search beams
 ;---------------------------------
