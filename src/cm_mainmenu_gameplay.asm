@@ -8,6 +8,7 @@ cm_submenu_gameplay:
 	dw cm_gameplay_disable_beams
 	dw cm_gameplay_lit_rooms
 	dw cm_gameplay_fast_moving_walls
+	dw cm_gameplay_quickswap
 	dw cm_gameplay_probes
 	dw cm_gameplay_bonk_items
 	dw cm_gameplay_shutoffbg1
@@ -41,6 +42,9 @@ cm_gameplay_lit_rooms:
 
 cm_gameplay_fast_moving_walls:
 	%cm_toggle("Fast walls", !ram_fast_moving_walls)
+    
+cm_gameplay_quickswap:
+	%cm_toggle("Item quickswap", !ram_quickswap)
 
 cm_gameplay_shutoffbg1:
 	%cm_toggle_bit("Disable BG1", !disabled_layers, #$01)

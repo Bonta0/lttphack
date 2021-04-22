@@ -25,6 +25,17 @@ org $1CF640
 org $01CA66
 	JSL set_moving_wall_speed
 	RTS
+    
+;-------------------
+; Quick Swap
+;-------------------
+org $0287FB
+    JSL quickswap
+org $02A451
+    JSL quickswap
+
+org $0DDB7F
+HUD_RefreshIconLong:
 
 ;---------------------------------
 ; Visible guard search beams
@@ -136,3 +147,44 @@ set_moving_wall_speed:
 	LDA #$2200 : CLC : ADC $041C : STA $041C
 	ROL : AND #$0001
 	RTL
+
+quickswap:
+	LDA.b $F6 : AND #$30 : BEQ .done
+
+	XBA ; stash away the value for after the checks.
+
+	LDA.l !ram_quickswap : BEQ .done
+	LDA.w $0202 : BEQ .done ; Skip everything if we don't have any items
+
+	PHX
+	XBA ; restore the stashed value
+    
+	CMP.b #$30 : BNE + ; pressed L+R
+		LDX.w $0202 : BRA .store
+	+
+    
+	BIT #$10 : BEQ + ; Only pressed R
+        LDA.w $0202 : TAX
+        -
+            CPX.b #$14 : BNE ++ : LDX.b #$00 : ++ INX
+        LDA $7EF33F, X : BEQ -
+		BRA .store
+	+
+    
+	; Only pressed L
+	LDA.w $0202 : TAX
+	-
+		CPX.b #$01 : BNE ++ : LDX.b #$15 : ++ DEX
+	LDA $7EF33F, X : BEQ -
+
+	.store
+	%update_timer()
+	LDA.b #$20 : STA.w $012F
+	STX $0202
+
+	JSL HUD_RefreshIconLong
+	PLX
+
+	.done
+	LDA.b $F6 : AND.b #$40 ;what we wrote over
+RTL
